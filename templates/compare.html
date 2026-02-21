@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Compare - Flask Starter{% endblock %}
+
+{% block content %}
+<h1>Policy Risk Grader</h1>
+<p>Paste one privacy policy text to grade it and highlight dangerous wording.</p>
+
+<form method="post" class="compare-form">
+	<label for="policy_text">Policy Input</label>
+	<textarea id="policy_text" name="policy_text" rows="12" placeholder="Paste privacy policy text here...">{{ policy_text }}</textarea>
+
+	<button type="submit">Grade Policy</button>
+</form>
+
+{% if report %}
+<section class="result-card single-result">
+	<h2>Risk Summary</h2>
+	<p><strong>Grade:</strong> <span class="grade grade-{{ report.risk_level|lower }}">{{ grade }}</span></p>
+	<p><strong>Risk Level:</strong> {{ report.risk_level }}</p>
+	<p><strong>Risk Score:</strong> {{ report.risk_score }}</p>
+	<p><strong>Total Hits:</strong> {{ report.summary.total_hits }}</p>
+	<p><strong>Weasel Hits:</strong> {{ report.summary.weasel_word_hits }}</p>
+</section>
+
+<section class="result-card single-result">
+	<h2>Detected Dangers</h2>
+	{% if flaws %}
+	<ul class="flaw-list">
+		{% for flaw in flaws %}
+		<li>
+			<span class="severity severity-{{ flaw.severity }}">{{ flaw.severity|upper }}</span>
+			{{ flaw.term }} (x{{ flaw.count }})
+		</li>
+		{% endfor %}
+	</ul>
+	{% else %}
+	<p>No dangerous terms were detected.</p>
+	{% endif %}
+</section>
+
+<section class="result-card single-result">
+	<h2>Highlighted Policy Text</h2>
+	{{ highlighted_text }}
+</section>
+{% endif %}
+{% endblock %}

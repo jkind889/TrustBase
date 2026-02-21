@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Cookie Audit{% endblock %}
+
+{% block content %}
+<h1>Cookie Truthfulness Audit</h1>
+<p>Score a site's cookie behavior against its policy disclosures.</p>
+
+<form method="post" class="compare-form">
+    <label for="consent_state">When were cookies captured?</label>
+    <select id="consent_state" name="consent_state" class="input-select">
+        <option value="before_consent" {% if consent_state == "before_consent" %}selected{% endif %}>Before consent</option>
+        <option value="after_reject" {% if consent_state == "after_reject" %}selected{% endif %}>After reject all</option>
+        <option value="after_accept" {% if consent_state == "after_accept" %}selected{% endif %}>After accept all</option>
+    </select>
+
+    <label for="policy_text">Policy/TOS snippet</label>
+    <textarea id="policy_text" name="policy_text" rows="8" placeholder="Paste relevant policy text...">{{ policy_text }}</textarea>
+
+    <label for="observed_cookies">Observed cookies (names or name=value, one per line)</label>
+    <textarea id="observed_cookies" name="observed_cookies" rows="8" placeholder="_ga
+_fbp
+sessionid=abc...">{{ observed_cookies }}</textarea>
+
+    <button type="submit">Score Truthfulness</button>
+</form>
+
+{% if result %}
+<section class="result-card single-result">
+    <h2>Audit Score</h2>
+    <p><strong>Grade:</strong> <span class="grade grade-{{ result.risk_level|lower }}">{{ result.grade }}</span></p>
+    <p><strong>Score:</strong> {{ result.score }}/100</p>
+    <p><strong>Risk Level:</strong> {{ result.risk_level }}</p>
+    <p><strong>Consent State:</strong> {{ result.consent_state }}</p>
+</section>
+
+<section class="result-card single-result">
+    <h2>Detected Issues</h2>
+    {% if result.issues %}
+    <ul class="flaw-list">
+        {% for issue in result.issues %}
+        <li>
+            <span class="severity severity-{{ issue.severity }}">{{ issue.severity|upper }}</span>
+            <strong>{{ issue.title }}</strong> — {{ issue.detail }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No major mismatches detected from the provided data.</p>
+    {% endif %}
+</section>
+
+<section class="result-card single-result">
+    <h2>Cookie Breakdown</h2>
+    <p><strong>Analytics:</strong> {{ result.category_counts.analytics }}</p>
+    <p><strong>Advertising:</strong> {{ result.category_counts.advertising }}</p>
+    <p><strong>Session:</strong> {{ result.category_counts.session }}</p>
+    <p><strong>Functional:</strong> {{ result.category_counts.functional }}</p>
+    <p><strong>Unknown:</strong> {{ result.category_counts.unknown }}</p>
+</section>
+{% endif %}
+{% endblock %}
