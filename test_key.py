@@ -38,11 +38,11 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 
 if not api_key:
-    print("❌ Error: GEMINI_API_KEY not found in .env file!")
+    print(" Error: GEMINI_API_KEY not found in .env file!")
 else:
-    print("✅ API Key loaded successfully.")
+    print(" API Key loaded successfully.")
     
-    # 3. Try a tiny request
+    
     try:
         client = genai.Client(api_key=api_key)
         last_error = None
@@ -60,15 +60,15 @@ else:
                     model=model_name,
                     contents="Say 'System Online' if you can read this.",
                 )
-                print(f"✅ Working model: {model_name}")
-                print(f"🤖 Gemini says: {getattr(response, 'text', '(No text returned)')}")
-                print("✨ Your API key is working perfectly!")
+                print(f" Working model: {model_name}")
+                print(f" Gemini says: {getattr(response, 'text', '(No text returned)')}")
+                print(" Your API key is working perfectly!")
                 break
             except Exception as model_error:
                 last_error = model_error
-                print(f"⚠️ {model_name} unavailable, trying next...")
+                print(f" {model_name} unavailable, trying next...")
         else:
             raise last_error if last_error else RuntimeError("No model candidates succeeded.")
         
     except Exception as e:
-        print(f"❌ API Request Failed: {e}")
+        print(f" API Request Failed: {e}")
